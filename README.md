@@ -2,6 +2,8 @@
 
 This library aims to provide a bundle of Cucumber predefined steps to perform HTTP calls and perform verifications on the HTTP response.
 
+Here are the [future plans/todos](dev/IdeasTodos.md) 
+
 ## Steps provided
 ```java
 @Given("^the request body is$")
