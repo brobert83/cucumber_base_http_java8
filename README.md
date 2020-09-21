@@ -4,6 +4,8 @@ This library aims to provide a bundle of Cucumber predefined steps to perform HT
 
 There is a small test project demonstrating how to use this library here https://github.com/brobert83/cucumber_base_http_java8_springboot_test
 
+#### Todos & Ideas are [here](dev/IdeasTodos.md) 
+
 ## Steps provided
 ```java
 @Given("^the request body is$")
@@ -66,7 +68,7 @@ public class CucumberTest {
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {
                 StepsBase.SpringTestConfig.class, // the class just below
-                HttpUnirestSpringConfig.class, // library class, required
+                CucumberBaseSpringConfig.class, // library class, required
                 MySpringBootApp.class, // your @SpringBootApplication class
                 MySpringApplicationConfiguration.class // a class annotated with @Configuration
         }
@@ -111,14 +113,14 @@ public class MySteps {
     
     @Autowired HttpRequestStepsContext httpRequestStepsContext;
 
-    @Given("^some programatic setup$")
+    @Given("^some programmatic setup$")
     public void someSetup(){
         //..
-        httpRequestStepsContext.getHeaders().put("john","smith");
+        httpRequestStepsContext.getRequestHeaders().put("john","smith");
         //...
     }
 
-    @Given("^some programatic check$")
+    @Given("^some programmatic check$")
     public void someCheck(){
         //..
         assertThat(httpRequestStepsContext.getHttpResponse().getBody()).contains("apples");

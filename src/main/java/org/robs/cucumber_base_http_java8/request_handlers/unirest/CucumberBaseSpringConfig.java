@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class HttpUnirestSpringConfig {
+public class CucumberBaseSpringConfig {
 
     @Bean
     public Map<String, HttpRequestHandler<HttpResponse<String>>> unirestHttpHandlers(

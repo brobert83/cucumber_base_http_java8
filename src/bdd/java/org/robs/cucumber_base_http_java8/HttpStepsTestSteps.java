@@ -10,7 +10,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.spring.CucumberContextConfiguration;
 import lombok.Getter;
 import lombok.Setter;
-import org.robs.cucumber_base_http_java8.request_handlers.unirest.HttpUnirestSpringConfig;
+import org.robs.cucumber_base_http_java8.request_handlers.unirest.CucumberBaseSpringConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +33,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @CucumberContextConfiguration
 @ContextConfiguration(classes = {
         HttpStepsTestSteps.SpringTestConfig.class,
-        HttpUnirestSpringConfig.class
+        CucumberBaseSpringConfig.class
 })
 public class HttpStepsTestSteps {
 
