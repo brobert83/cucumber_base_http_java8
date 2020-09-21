@@ -131,6 +131,7 @@ public class HttpStepsTestSteps {
         put("delete", path -> WireMock.delete(urlEqualTo(path)));
         put("head", path -> WireMock.head(urlEqualTo(path)));
         put("options", path -> WireMock.options(urlEqualTo(path)));
+        put("patch", path -> WireMock.patch(urlEqualTo(path)));
     }};
 
     @Given("^the http mock endpoint '(.*)' is made available$")
