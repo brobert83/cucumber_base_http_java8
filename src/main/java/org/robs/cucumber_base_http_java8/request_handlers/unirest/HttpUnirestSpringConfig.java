@@ -21,9 +21,12 @@ public class HttpUnirestSpringConfig {
 
         Map<String, HttpRequestHandler<HttpResponse<String>>> handlers = new HashMap<>();
         handlers.put("post", context -> sendUnirestRequestWithBody.apply(Unirest.post(context.getUrl()), context));
-        handlers.put("get", context -> sendUnirestRequestWithoutBody.apply(Unirest.get(context.getUrl()), context));
         handlers.put("put", context -> sendUnirestRequestWithBody.apply(Unirest.put(context.getUrl()), context));
         handlers.put("delete", context -> sendUnirestRequestWithBody.apply(Unirest.delete(context.getUrl()), context));
+
+        handlers.put("get", context -> sendUnirestRequestWithoutBody.apply(Unirest.get(context.getUrl()), context));
+        handlers.put("head", context -> sendUnirestRequestWithoutBody.apply(Unirest.head(context.getUrl()), context));
+        handlers.put("options", context -> sendUnirestRequestWithoutBody.apply(Unirest.options(context.getUrl()), context));
 
         return  handlers;
     }
