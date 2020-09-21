@@ -1,6 +1,6 @@
 Feature: Steps for performing a GET request
 
-  Scenario: Perform a GET request and verify the status code
+  Scenario: Perform a GET request
 
     Given the http mock endpoint 'resources_for_getting' for method 'GET' on path '/resources/1'
     Given the http mock endpoint 'resources_for_getting' expects request header 'Content-Type'='application/json'
@@ -18,7 +18,7 @@ Feature: Steps for performing a GET request
     Then the response body matches '{"name":"Rob","status":"active"}'
     Then the response has header 'Content-Type'='application/json'
 
-  Scenario: Perform a GET request and verify the status code (Heredoc)
+  Scenario: Perform a GET request (Heredoc)
 
     Given the http mock endpoint 'resources_for_getting' for method 'GET' on path '/resources/1'
     Given the http mock endpoint 'resources_for_getting' expects request header 'Content-Type'='application/json'

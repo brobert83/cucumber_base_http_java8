@@ -126,6 +126,7 @@ public class HttpStepsTestSteps {
 
     Map<String, Function<String, MappingBuilder>> baseMappingBuilders = new HashMap<String, Function<String, MappingBuilder>>() {{
         put("get", path -> WireMock.get(urlEqualTo(path)));
+        put("post", path -> WireMock.post(urlEqualTo(path)));
     }};
 
     @Given("^the http mock endpoint '(.*)' is made available$")
