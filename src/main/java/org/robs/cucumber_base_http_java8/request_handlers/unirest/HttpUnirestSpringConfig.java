@@ -2,6 +2,7 @@ package org.robs.cucumber_base_http_java8.request_handlers.unirest;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.robs.cucumber_base_http_java8.HttpRequestStepsContext;
 import org.robs.cucumber_base_http_java8.request_handlers.HttpRequestHandler;
 import org.robs.cucumber_base_http_java8.request_handlers.unirest.common.SendUnirestRequestWithBody;
 import org.robs.cucumber_base_http_java8.request_handlers.unirest.common.SendUnirestRequestWithoutBody;
@@ -40,6 +41,11 @@ public class HttpUnirestSpringConfig {
     @Bean
     SendUnirestRequestWithoutBody sendUnirestRequestWithoutBody(){
         return new SendUnirestRequestWithoutBody();
+    }
+
+    @Bean
+    HttpRequestStepsContext httpRequestStepsContext(){
+        return new HttpRequestStepsContext();
     }
 
 }
