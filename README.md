@@ -4,6 +4,8 @@ This library aims to provide a bundle of Cucumber predefined steps to perform HT
 
 There is a small test project demonstrating how to use this library here https://github.com/brobert83/cucumber_base_http_java8_springboot_test
 
+Here are the [future plans/todos](dev/IdeasTodos.md) 
+
 ## Steps provided
 ```java
 @Given("^the request body is$")
