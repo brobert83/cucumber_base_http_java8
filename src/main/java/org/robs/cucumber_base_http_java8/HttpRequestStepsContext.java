@@ -6,19 +6,18 @@ import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 @Getter
 @Setter
-public class HttpStepsContext {
+public class HttpRequestStepsContext {
 
     private String requestMethod;
     private String requestBody;
-    private String contentType;
     private String url;
 
-    private HttpResponse<String> httpResponse;
+    private Map<String,String> requestHeaders = new HashMap<>();
+    private Map<String,String> responseHeaders = new HashMap<>();
 
-    private Map<String, Function<HttpStepsContext, HttpResponse<String>>> httpMethodHandlers = new HashMap<>();
+    private HttpResponse<String> httpResponse;
 
 }
