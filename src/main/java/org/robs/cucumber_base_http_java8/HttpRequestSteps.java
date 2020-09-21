@@ -20,13 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HttpRequestSteps {
 
     // User defined
-    @Autowired Supplier<ObjectMapper> objectMapper;
+    @Autowired Supplier<ObjectMapper> objectMapperSupplier;
     @Autowired Supplier<String> baseUrl;
 
     // internal defined
     @Autowired Map<String, HttpRequestHandler<HttpResponse<String>>> unirestHttpHandlers;
-
-    HttpRequestStepsContext context = new HttpRequestStepsContext();
+    @Autowired HttpRequestStepsContext httpRequestStepsContext;
 
     String appUrl(String uri) {
         return baseUrl.get() + uri;
@@ -43,37 +42,37 @@ public class HttpRequestSteps {
     }
 
     private void setRequestBody(String body) {
-        context.setRequestBody(body);
+        httpRequestStepsContext.setRequestBody(body);
     }
 
     @Given("^the request method is '(.*)'$")
     public void requestMethod(String method) {
-        context.setRequestMethod(method);
+        httpRequestStepsContext.setRequestMethod(method);
     }
 
     @Given("^the request has header '(.*)'='(.*)'$")
     public void requestHeader(String headerName, String headerValue) {
-        context.getRequestHeaders().put(headerName, headerValue);
+        httpRequestStepsContext.getRequestHeaders().put(headerName, headerValue);
     }
 
     @When("^the request is sent to '(.*)'$")
     public void sendRequest(String uri) {
 
-        context.setUrl(appUrl(uri));
+        httpRequestStepsContext.setUrl(appUrl(uri));
 
-        String requestMethod = context.getRequestMethod();
+        String requestMethod = httpRequestStepsContext.getRequestMethod();
 
         HttpResponse<String> response = Optional.ofNullable(unirestHttpHandlers.get(requestMethod.toLowerCase()))
-                .map(handler -> handler.handle(context))
+                .map(handler -> handler.handle(httpRequestStepsContext))
                 .orElseThrow(() -> new RuntimeException(String.format("No handler found for '%s'", requestMethod)));
 
-        context.setHttpResponse(response);
+        httpRequestStepsContext.setHttpResponse(response);
     }
 
     @Then("^the server responds with status code '(.*)'$")
     public void verifyStatusCode(int expectedStatusCode) {
-        assertThat(context.getHttpResponse().getStatus())
-                .describedAs("Response code for body:\n" + context.getHttpResponse().getBody())
+        assertThat(httpRequestStepsContext.getHttpResponse().getStatus())
+                .describedAs("Response code for body:\n" + httpRequestStepsContext.getHttpResponse().getBody())
                 .isEqualTo(expectedStatusCode);
     }
 
@@ -88,8 +87,8 @@ public class HttpRequestSteps {
     }
 
     private void verifyResponseBody(String expectedBody) throws JsonProcessingException {
-        JsonNode expectedBodyNode = objectMapper.get().readTree(expectedBody);
-        JsonNode actualBodyNode = objectMapper.get().readTree(context.getHttpResponse().getBody());
+        JsonNode expectedBodyNode = objectMapperSupplier.get().readTree(expectedBody);
+        JsonNode actualBodyNode = objectMapperSupplier.get().readTree(httpRequestStepsContext.getHttpResponse().getBody());
 
         assertThat(actualBodyNode).isEqualTo(expectedBodyNode);
     }
@@ -97,7 +96,7 @@ public class HttpRequestSteps {
     @Then("^the response has header '(.*)'='(.*)'$")
     public void verifyResponseHeader(String headerName, String headerValue) {
 
-        List<String> headerValues = context.getHttpResponse().getHeaders().get(headerName);
+        List<String> headerValues = httpRequestStepsContext.getHttpResponse().getHeaders().get(headerName);
 
         assertThat(headerValues).isNotNull();
         assertThat(headerValues).contains(headerValue);

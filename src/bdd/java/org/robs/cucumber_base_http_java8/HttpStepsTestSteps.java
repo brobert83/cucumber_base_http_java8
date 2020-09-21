@@ -57,7 +57,7 @@ public class HttpStepsTestSteps {
 
         // ==== REQUIRED BY HttpSteps ====
         @Bean
-        Supplier<ObjectMapper> objectMapper() {
+        Supplier<ObjectMapper> objectMapperSupplier() {
             return ObjectMapper::new;
         }
 
