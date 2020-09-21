@@ -10,6 +10,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.spring.CucumberContextConfiguration;
 import lombok.Getter;
 import lombok.Setter;
+import org.robs.cucumber_base_http_java8.request_handlers.unirest.HttpUnirestSpringConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @ActiveProfiles("cucumber")
 @CucumberContextConfiguration
-@ContextConfiguration(classes = {HttpTestsTestSteps.SpringTestConfig.class})
-public class HttpTestsTestSteps {
+@ContextConfiguration(classes = {
+        HttpStepsTestSteps.SpringTestConfig.class,
+        HttpUnirestSpringConfig.class
+})
+public class HttpStepsTestSteps {
 
     @Profile("cucumber")
     @Configuration
@@ -53,7 +57,7 @@ public class HttpTestsTestSteps {
 
         // ==== REQUIRED BY HttpSteps ====
         @Bean
-        Supplier<ObjectMapper> objectMapper() {
+        Supplier<ObjectMapper> objectMapperSupplier() {
             return ObjectMapper::new;
         }
 
@@ -64,7 +68,7 @@ public class HttpTestsTestSteps {
 
     }
 
-    private static final Logger logger = getLogger(HttpTestsTestSteps.class);
+    private static final Logger logger = getLogger(HttpStepsTestSteps.class);
 
     Map<String, EndpointMock> endpointsBuilders = new HashMap<>();
 
@@ -80,7 +84,7 @@ public class HttpTestsTestSteps {
         int statusCode;
     }
 
-    @Given("^the '(.*)' endpoint for method '(.*)' on path '(.*)'$")
+    @Given("^the http mock endpoint '(.*)' for method '(.*)' on path '(.*)'$")
     public void setupMockEndpoint(String endpointName, String method, String path) {
 
         EndpointMock endpointMock = new EndpointMock();
@@ -91,31 +95,46 @@ public class HttpTestsTestSteps {
         endpointMock.setPath(path);
     }
 
-    @Given("^the '(.*)' endpoint expects request header '(.*)'='(.*)'$")
+    @Given("^the http mock endpoint '(.*)' expects request header '(.*)'='(.*)'$")
     public void setupEndpointExpectHeader(String endpointName, String headerName, String headerValue) {
         endpointsBuilders.get(endpointName).getRequestHeaders().put(headerName, headerValue);
     }
 
-    @Given("^the '(.*)' endpoint responds with body$")
-    public void setupEndpointResponseBody(String endpointName, String responseBody) {
+    @Given("^the http mock endpoint '(.*)' responds with body$")
+    public void setupEndpointResponseBodyHeredoc(String endpointName, String responseBody) {
+        setupEndpointResponseBody(endpointName, responseBody);
+    }
+
+    private void setupEndpointResponseBody(String endpointName, String responseBody) {
         endpointsBuilders.get(endpointName).setResponseBody(responseBody);
     }
 
-    @Given("^the '(.*)' endpoint responds with header '(.*)'='(.*)'$")
+    @Given("^the http mock endpoint '(.*)' responds with body '(.*)'$")
+    public void setupEndpointResponseBodyParam(String endpointName, String responseBody) {
+        setupEndpointResponseBody(endpointName, responseBody);
+    }
+
+    @Given("^the http mock endpoint '(.*)' responds with header '(.*)'='(.*)'$")
     public void setupEndpointResponseHeader(String endpointName, String headerName, String headerValue) {
         endpointsBuilders.get(endpointName).getResponseHeaders().put(headerName, headerValue);
     }
 
-    @Given("^the '(.*)' endpoint responds with status code '(.*)'$")
+    @Given("^the http mock endpoint '(.*)' responds with status code '(.*)'$")
     public void setupEndpointStatusCode(String endpointName, int statusCode) {
         endpointsBuilders.get(endpointName).setStatusCode(statusCode);
     }
 
     Map<String, Function<String, MappingBuilder>> baseMappingBuilders = new HashMap<String, Function<String, MappingBuilder>>() {{
         put("get", path -> WireMock.get(urlEqualTo(path)));
+        put("post", path -> WireMock.post(urlEqualTo(path)));
+        put("put", path -> WireMock.put(urlEqualTo(path)));
+        put("delete", path -> WireMock.delete(urlEqualTo(path)));
+        put("head", path -> WireMock.head(urlEqualTo(path)));
+        put("options", path -> WireMock.options(urlEqualTo(path)));
+        put("patch", path -> WireMock.patch(urlEqualTo(path)));
     }};
 
-    @Given("^the '(.*)' endpoint is available$")
+    @Given("^the http mock endpoint '(.*)' is made available$")
     public void buildEndpointMock(String endpointName) {
 
         EndpointMock endpointMock = endpointsBuilders.get(endpointName);
@@ -134,18 +153,19 @@ public class HttpTestsTestSteps {
         // Setup Response
         AtomicReference<ResponseDefinitionBuilder> responseDefinitionBuilder = new AtomicReference<>(aResponse());
 
-        //response status
+        // response status
         responseDefinitionBuilder.getAndUpdate(builder -> builder.withStatus(endpointMock.getStatusCode()));
 
-        //response headers
+        // response headers
         endpointMock.getResponseHeaders().forEach((responseHeaderName, responseHeaderValue) -> responseDefinitionBuilder.getAndUpdate(builder -> builder.withHeader(responseHeaderName, responseHeaderValue)));
 
         // response body
         Optional.ofNullable(endpointMock.getResponseBody()).map(responseBody -> responseDefinitionBuilder.getAndUpdate(builder -> builder.withBody(responseBody)));
 
+        mappingBuilder.getAndUpdate(b -> b.willReturn(responseDefinitionBuilder.get()));
+
         // make it happen
         stubFor(mappingBuilder.get());
     }
-
 
 }
