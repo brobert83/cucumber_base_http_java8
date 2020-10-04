@@ -1,4 +1,4 @@
-package org.robs.cucumber_base_http_java8;
+package io.github.brobert83.cucumber_http_java8;
 
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;

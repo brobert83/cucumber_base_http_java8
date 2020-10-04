@@ -1,4 +1,4 @@
-package org.robs.cucumber_base_http_java8;
+package io.github.brobert83.cucumber_http_java8;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -10,7 +10,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.spring.CucumberContextConfiguration;
 import lombok.Getter;
 import lombok.Setter;
-import org.robs.cucumber_base_http_java8.request_handlers.unirest.CucumberBaseSpringConfig;
+import io.github.brobert83.cucumber_http_java8.request_handlers.unirest.CucumberBaseSpringConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

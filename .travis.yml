@@ -1,1 +1,27 @@
+dist: bionic
 language: java
+jdk:
+- openjdk8
+install: mvn clean package
+cache:
+  directories:
+  - ".autoconf"
+  - "$HOME/.m2"
+env:
+  global:
+  - LOG_LEVEL=INFO
+  - GPG_KEYNAME=75D454B6
+  - secure: HWD3kNcDlRLDFPhNL3MOcAcJxFcMGV5d1NNrNsO+/I/UXywgfAn9J5PP+PPP6mvSE2SGRh6mMnUhDJ7ftwBD/hzCnmyPkL5NOVvXsQgM4scLpELjsqx6Oz4PG8tEoJEnh0siV5T0uTB0SsH7eGvywklmFKnN6st2+cu6rV6tM6k1BEtuuhiwEzDzJxnfB++ODwd8n9THm0F45TgrnI9kzwtLP7A8EX5lSG8pxD1PtxqLkv1uo59cOEZRQP1JXhzNmK08IDR+xpX0+Crc7FqlQ1x2Wu19ZV8Cg++L10tDYTS3VDy7x/awlyO5rn4/vd394dIYbRJFmrWQUcVgwoQY/Un3kNl1qVUnnwfZVeW9Qo6dWHN6yn778X6p4Xg5vF3u449RIPsnjFrqHRpuj+wFZi1EauX53tGnyBipCgXMrxrbnqv6jCJV/p8WonirMfll51TvladZHW6yalSg/Fpuh+eHAsq3ZdoshizyeEwOdd9AqBXiWv3GFwdLYbqc/ofOgXmIyqKmVAhDJ+oZFy4kf4z7POB9k+x+NChduCx8pIWoKX3kSbkdNdrZH/4TvPY9MbWc8t0COj++H3njvXtw6YySfbRB1mEO/Omi/yy6t6Xk2V8+icPKdhPEXmiwFCBL3KeIsHGL9aCDCroO8cuu2ygAPUMuCxrYU6jo9jX8sng=
+  - secure: PFl7+3i2G5P20TVfwbuhYbRcfk6ztwvxlMHiwelyGtJPd6FcTSjjY5m1TS9VpxYzUiZ1vOsAoWbE+8mB+PnNlHsYwP53ScxLu+hoCRKGKieJlvg3Sng3VKrVGr5oV+dU26qzakgrwFZ8ivL/4mAjxfSxUq+dvV2oN2L8yTQfGQagJ/2c4c7m0RQjslW1scSqalntUIrHptXw4Ls6jYhcRRXGAXQLGWa54VmU3a9ozwtk98+VPI6XAuXNQ35oHjV+YLw8zyZR1fmKLO24N7L3YshC56uzPoOsSOWdHIHy9XCQT/evlbvLegTb+nmyrIHxBpjHkckVmFHhMouQNbFj/6O9dV4tDfe98f45OupJJom8Pdl2fPSOfqARpwQEp4hIlsSNT1kXzurldOBQ6eVVxYfT272NRYAkwHQZ9+BUfHww8p1t1vYAKJM1tnpfrzDUz8Jfw3F5V74K+o9SRN63MiWkog3+Jh8lpdA1kjh38BDK016xXChvbHsMczGAHctlJ0YUJt3hk6HL8w55JuljJyRCH5EOY5SDdPyUYF37iQMXI2ALXBN0w9cJcp8/CguWmIjxEitx9rvKetCeygsMArfu/gclYhe9jKd8NkTMXHHUvcqas3IebhWst8haEOlXEcLHMOLQZjfvTPQzwUo9qqLVRrr5hYGaZdZO+gXiZ44=
+  - secure: sD78gxGnvzkf6k2IliglUTJoyIouyquzdNVaHQV8fWm785xf1rWGq8Zv9N9u0nMh+faD6blZaGXuTaidU6G04haRuGJd4PCvHK0VtUmTUB8y/ZX6olk5q3QIc9bnVT4LpcBhOiDJzc1GDwk1e6RInfXTgBOAW8tJePLDFpbHniyN1uol/KZXGO1QaGPXlWTU5iU01jzw5J8jzVv90hhcy5u1Jhj1NVTzXkG0nz8C4TtCpwqAvq+b2Ezo3R7dTf3hJpyRvS12yAhIjzTVC/TH4juiW4Asq4m2zIkdoQR6W0qZzuaHZ2BWAio9JeT+bxF41TVx4YEbzTqg22TiRQTlBLfCte3iaFRgALh1EbwiAy005Y7HyxeWJhSV9unZzDj9PRAhCiqnY53sljz2SbOsos1Xs/aBtcjg9473OxhYZ+3jjHqAEyCONqRF/Bjzwk0WVDwMBIVZO3KSnqa6m2EJhVq/6v+0d4Iv57Gy2/z56S93i33ExD9KdUT2HqecnMl2k99jYAusxUSt+Hly3LaDRicpunoRc1l1u7tQCTwz+6DljtS+V42BpvGlsUqksB8qrNYNN8fCo7ztJPqhm7FavCESaxOwlQGg44DOh9YGWA/xa5NypF4zX3d6/xdvjeqg/OceQiRztrAHm03Ds/7iS/1+uBIkjkHQHVElsBAC+AY=
+jobs:
+  include:
+  - stage: publish
+    before_install:
+    - if [[ "$TRAVIS_BRANCH" == "release" ]]; then
+        openssl aes-256-cbc -K $encrypted_171b1c559d7b_key -iv $encrypted_171b1c559d7b_iv -in travis/signingkey.asc.enc -out signingkey.asc -d;
+      fi
+    script:
+    - if [[ "$TRAVIS_BRANCH" == "release" ]]; then
+        travis/publish.sh signingkey.asc;
+      fi

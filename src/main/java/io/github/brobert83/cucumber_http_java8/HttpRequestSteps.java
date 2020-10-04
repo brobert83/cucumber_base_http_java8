@@ -1,4 +1,4 @@
-package org.robs.cucumber_base_http_java8;
+package io.github.brobert83.cucumber_http_java8;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,7 +7,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import kong.unirest.HttpResponse;
-import org.robs.cucumber_base_http_java8.request_handlers.HttpRequestHandler;
+import io.github.brobert83.cucumber_http_java8.request_handlers.HttpRequestHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
