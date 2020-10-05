@@ -3,7 +3,7 @@ This library aims to provide a bundle of Cucumber predefined steps to perform HT
 
 There is a small test project demonstrating how to use this library here https://github.com/brobert83/cucumber_base_http_java8_springboot_test
 
-#### Todos & Ideas are [here](dev/IdeasTodos.md) 
+#### [Roadmap](dev/Roadmap.md) 
 
 ## Steps provided
 ```java
@@ -39,9 +39,9 @@ Then the response has header 'Content-Type'='application/json'
 ### 1. Add the maven dependency
 ```xml
 <dependency>
-    <groupId>org.robs</groupId>
-    <artifactId>cucumber_base_http_java8</artifactId>
-    <version>${cucumber_base_http_java8.version}</version>
+    <groupId>io.github.brobert83</groupId>
+    <artifactId>cucumber-http-java8</artifactId>
+    <version>0.1.0</version>
     <scope>test</scope>
 </dependency>     
 ```
@@ -51,7 +51,7 @@ Then the response has header 'Content-Type'='application/json'
 @CucumberOptions(
         features = "src/bdd/resources/features",
         plugin = {"pretty", "html:target/cucumber.html"},
-        extraGlue = {"org.robs.cucumber_base_http_java8"} // you cannot have both glue and extraGlue, be carefull with this
+        extraGlue = {"io.github.brobert83.cucumber_http_java8"} // you cannot have both glue and extraGlue, be careful with this
 )
 public class CucumberTest {
 
@@ -127,6 +127,7 @@ public class MySteps {
     }
 }
 ```
+_Disclaimer:_ This will be changed in the near future, the internal implementation will be changed to OkHttp and a better mechanism will be implemented to support interoperability.
 
 # General considerations
 

@@ -1,8 +1,8 @@
-package org.robs.cucumber_base_http_java8.request_handlers.unirest.common;
+package io.github.brobert83.cucumber_http_java8.request_handlers.unirest.common;
 
 import kong.unirest.HttpRequestWithBody;
 import kong.unirest.HttpResponse;
-import org.robs.cucumber_base_http_java8.HttpRequestStepsContext;
+import io.github.brobert83.cucumber_http_java8.HttpRequestStepsContext;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
