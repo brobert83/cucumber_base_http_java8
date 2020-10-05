@@ -1,16 +1,15 @@
 package io.github.brobert83.cucumber_http_java8;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import io.cucumber.java.en.Given;
 import io.cucumber.spring.CucumberContextConfiguration;
 import lombok.Getter;
 import lombok.Setter;
-import io.github.brobert83.cucumber_http_java8.request_handlers.unirest.CucumberBaseSpringConfig;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +32,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @CucumberContextConfiguration
 @ContextConfiguration(classes = {
         HttpStepsTestSteps.SpringTestConfig.class,
-        CucumberBaseSpringConfig.class
+        CucumberHttpSpringConfig.class
 })
 public class HttpStepsTestSteps {
 
@@ -55,12 +54,7 @@ public class HttpStepsTestSteps {
             return wireMockServer;
         }
 
-        // ==== REQUIRED BY HttpSteps ====
-        @Bean
-        Supplier<ObjectMapper> objectMapperSupplier() {
-            return ObjectMapper::new;
-        }
-
+        // ==== Customization ====
         @Bean
         Supplier<String> baseUrl(WireMockServer wireMockServer) {
             return () -> "http://localhost:" + wireMockServer.port();
@@ -72,13 +66,11 @@ public class HttpStepsTestSteps {
 
     Map<String, EndpointMock> endpointsBuilders = new HashMap<>();
 
-    @Autowired Supplier<ObjectMapper> objectMapper;
     @Autowired WireMockServer wireMockServer;
 
     @Getter @Setter
     static class EndpointMock {
-        String path;
-        String method, responseBody;
+        String path, method, requestBody, responseBody;
         Map<String, String> requestHeaders = new HashMap<>();
         Map<String, String> responseHeaders = new HashMap<>();
         int statusCode;
@@ -98,6 +90,11 @@ public class HttpStepsTestSteps {
     @Given("^the http mock endpoint '(.*)' expects request header '(.*)'='(.*)'$")
     public void setupEndpointExpectHeader(String endpointName, String headerName, String headerValue) {
         endpointsBuilders.get(endpointName).getRequestHeaders().put(headerName, headerValue);
+    }
+
+    @Given("^the http mock endpoint '(.*)' expects request body$")
+    public void setupEndpointExpectHeader(String endpointName, String body) {
+        endpointsBuilders.get(endpointName).setRequestBody(body);
     }
 
     @Given("^the http mock endpoint '(.*)' responds with body$")
@@ -142,6 +139,9 @@ public class HttpStepsTestSteps {
         // Setup request
         // method and path
         AtomicReference<MappingBuilder> mappingBuilder = new AtomicReference<>(baseMappingBuilders.get(endpointMock.getMethod().toLowerCase()).apply(endpointMock.getPath()));
+
+        // request body
+        Optional.ofNullable(endpointMock.getRequestBody()).map(expectedBody -> mappingBuilder.getAndUpdate(builder -> builder.withRequestBody(new EqualToPattern(expectedBody))));
 
         // request headers
         endpointMock.getRequestHeaders().forEach(

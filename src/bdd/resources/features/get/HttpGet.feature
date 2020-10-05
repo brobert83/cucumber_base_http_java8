@@ -9,7 +9,7 @@ Feature: Steps for performing a GET request
     Given the http mock endpoint 'resources_for_getting' responds with status code '200'
     Given the http mock endpoint 'resources_for_getting' is made available
 
-    Given the request method is 'GET'
+    Given a 'GET' request
     Given the request has header 'Content-Type'='application/json'
 
     When the request is sent to '/resources/1'
@@ -30,7 +30,7 @@ Feature: Steps for performing a GET request
     Given the http mock endpoint 'resources_for_getting' responds with status code '200'
     Given the http mock endpoint 'resources_for_getting' is made available
 
-    Given the request method is 'GET'
+    Given a 'GET' request
     Given the request has header 'Content-Type'='application/json'
 
     When the request is sent to '/resources/1'

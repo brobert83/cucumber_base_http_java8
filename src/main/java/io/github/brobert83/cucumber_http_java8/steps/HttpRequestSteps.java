@@ -1,4 +1,4 @@
-package io.github.brobert83.cucumber_http_java8;
+package io.github.brobert83.cucumber_http_java8.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.github.brobert83.cucumber_http_java8.CucumberHttpContext;
 import kong.unirest.HttpResponse;
 import io.github.brobert83.cucumber_http_java8.request_handlers.HttpRequestHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +20,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class HttpRequestSteps {
 
-    // User defined
-    @Autowired Supplier<ObjectMapper> objectMapperSupplier;
-    @Autowired Supplier<String> baseUrl;
+    private final static ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper();
+    private final static String DEFAULT_BASE_URL = "http://localhost:8080";;
 
-    // internal defined
+    @Autowired(required = false) Supplier<ObjectMapper> objectMapperSupplier;
+    @Autowired(required = false) Supplier<String> baseUrl;
     @Autowired Map<String, HttpRequestHandler<HttpResponse<String>>> unirestHttpHandlers;
-    @Autowired HttpRequestStepsContext httpRequestStepsContext;
+    @Autowired CucumberHttpContext cucumberHttpContext;
+
+    ObjectMapper objectMapper() {
+        return Optional.ofNullable(objectMapperSupplier).map(Supplier::get).orElse(DEFAULT_OBJECT_MAPPER);
+    }
+
+    String baseUrl() {
+        return Optional.ofNullable(baseUrl).map(Supplier::get).orElse(DEFAULT_BASE_URL);
+    }
 
     String appUrl(String uri) {
-        return baseUrl.get() + uri;
+        return baseUrl() + uri;
+    }
+
+    @Given("^a '(.*)' request$")
+    public void requestMethod(String method) {
+        cucumberHttpContext.newContext();
+        cucumberHttpContext.setRequestMethod(method);
     }
 
     @Given("^the request body is$")
@@ -42,37 +57,33 @@ public class HttpRequestSteps {
     }
 
     private void setRequestBody(String body) {
-        httpRequestStepsContext.setRequestBody(body);
-    }
-
-    @Given("^the request method is '(.*)'$")
-    public void requestMethod(String method) {
-        httpRequestStepsContext.setRequestMethod(method);
+        cucumberHttpContext.setRequestBody(body);
     }
 
     @Given("^the request has header '(.*)'='(.*)'$")
     public void requestHeader(String headerName, String headerValue) {
-        httpRequestStepsContext.getRequestHeaders().put(headerName, headerValue);
+        cucumberHttpContext.getRequestHeaders().put(headerName, headerValue);
     }
 
     @When("^the request is sent to '(.*)'$")
     public void sendRequest(String uri) {
 
-        httpRequestStepsContext.setUrl(appUrl(uri));
+        cucumberHttpContext.setUrl(appUrl(uri));
 
-        String requestMethod = httpRequestStepsContext.getRequestMethod();
+        String requestMethod = cucumberHttpContext.getRequestMethod();
 
-        HttpResponse<String> response = Optional.ofNullable(unirestHttpHandlers.get(requestMethod.toLowerCase()))
-                .map(handler -> handler.handle(httpRequestStepsContext))
-                .orElseThrow(() -> new RuntimeException(String.format("No handler found for '%s'", requestMethod)));
+        Optional<HttpRequestHandler<HttpResponse<String>>> handler = Optional.ofNullable(unirestHttpHandlers.get(requestMethod.toLowerCase()));
+        handler.orElseThrow(() -> new RuntimeException(String.format("No handler found for '%s'", requestMethod)));
 
-        httpRequestStepsContext.setHttpResponse(response);
+        HttpResponse<String> response = handler.map(h -> h.handle(cucumberHttpContext)).orElse(null);
+
+        cucumberHttpContext.setHttpResponse(response);
     }
 
     @Then("^the server responds with status code '(.*)'$")
     public void verifyStatusCode(int expectedStatusCode) {
-        assertThat(httpRequestStepsContext.getHttpResponse().getStatus())
-                .describedAs("Response code for body:\n" + httpRequestStepsContext.getHttpResponse().getBody())
+        assertThat(cucumberHttpContext.getHttpResponse().getStatus())
+                .describedAs("Response code for body:\n" + cucumberHttpContext.getHttpResponse().getBody())
                 .isEqualTo(expectedStatusCode);
     }
 
@@ -87,8 +98,8 @@ public class HttpRequestSteps {
     }
 
     private void verifyResponseBody(String expectedBody) throws JsonProcessingException {
-        JsonNode expectedBodyNode = objectMapperSupplier.get().readTree(expectedBody);
-        JsonNode actualBodyNode = objectMapperSupplier.get().readTree(httpRequestStepsContext.getHttpResponse().getBody());
+        JsonNode expectedBodyNode = objectMapper().readTree(expectedBody);
+        JsonNode actualBodyNode = objectMapper().readTree(cucumberHttpContext.getHttpResponse().getBody());
 
         assertThat(actualBodyNode).isEqualTo(expectedBodyNode);
     }
@@ -96,7 +107,7 @@ public class HttpRequestSteps {
     @Then("^the response has header '(.*)'='(.*)'$")
     public void verifyResponseHeader(String headerName, String headerValue) {
 
-        List<String> headerValues = httpRequestStepsContext.getHttpResponse().getHeaders().get(headerName);
+        List<String> headerValues = cucumberHttpContext.getHttpResponse().getHeaders().get(headerName);
 
         assertThat(headerValues).isNotNull();
         assertThat(headerValues).contains(headerValue);
