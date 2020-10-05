@@ -1,24 +1,24 @@
-package io.github.brobert83.cucumber_http_java8.request_handlers.unirest;
+package io.github.brobert83.cucumber_http_java8;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
-import io.github.brobert83.cucumber_http_java8.HttpRequestStepsContext;
 import io.github.brobert83.cucumber_http_java8.request_handlers.HttpRequestHandler;
 import io.github.brobert83.cucumber_http_java8.request_handlers.unirest.common.SendUnirestRequestWithBody;
 import io.github.brobert83.cucumber_http_java8.request_handlers.unirest.common.SendUnirestRequestWithoutBody;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-public class CucumberBaseSpringConfig {
+public class CucumberHttpSpringConfig {
 
     @Bean
     public Map<String, HttpRequestHandler<HttpResponse<String>>> unirestHttpHandlers(
             SendUnirestRequestWithBody sendUnirestRequestWithBody,
-            SendUnirestRequestWithoutBody sendUnirestRequestWithoutBody){
+            SendUnirestRequestWithoutBody sendUnirestRequestWithoutBody) {
 
         Map<String, HttpRequestHandler<HttpResponse<String>>> handlers = new HashMap<>();
         handlers.put("post", context -> sendUnirestRequestWithBody.apply(Unirest.post(context.getUrl()), context));
@@ -30,22 +30,22 @@ public class CucumberBaseSpringConfig {
         handlers.put("head", context -> sendUnirestRequestWithoutBody.apply(Unirest.head(context.getUrl()), context));
         handlers.put("options", context -> sendUnirestRequestWithoutBody.apply(Unirest.options(context.getUrl()), context));
 
-        return  handlers;
+        return handlers;
     }
 
     @Bean
-    SendUnirestRequestWithBody sendUnirestRequestWithBody(){
+    SendUnirestRequestWithBody sendUnirestRequestWithBody() {
         return new SendUnirestRequestWithBody();
     }
 
     @Bean
-    SendUnirestRequestWithoutBody sendUnirestRequestWithoutBody(){
+    SendUnirestRequestWithoutBody sendUnirestRequestWithoutBody() {
         return new SendUnirestRequestWithoutBody();
     }
 
     @Bean
-    HttpRequestStepsContext httpRequestStepsContext(){
-        return new HttpRequestStepsContext();
+    CucumberHttpContext httpRequestStepsContext() {
+        return new CucumberHttpContext();
     }
 
 }

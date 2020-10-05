@@ -1,17 +1,17 @@
 package io.github.brobert83.cucumber_http_java8.request_handlers.unirest.common;
 
+import io.github.brobert83.cucumber_http_java8.CucumberHttpContext;
 import kong.unirest.HttpRequestWithBody;
 import kong.unirest.HttpResponse;
-import io.github.brobert83.cucumber_http_java8.HttpRequestStepsContext;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
-public class SendUnirestRequestWithBody implements BiFunction<HttpRequestWithBody, HttpRequestStepsContext, HttpResponse<String>>{
+public class SendUnirestRequestWithBody implements BiFunction<HttpRequestWithBody, CucumberHttpContext, HttpResponse<String>>{
 
     @Override
-    public HttpResponse<String> apply(HttpRequestWithBody requestWithBody, HttpRequestStepsContext context) {
+    public HttpResponse<String> apply(HttpRequestWithBody requestWithBody, CucumberHttpContext context) {
 
         AtomicReference<HttpRequestWithBody> request = new AtomicReference<>(requestWithBody);
 

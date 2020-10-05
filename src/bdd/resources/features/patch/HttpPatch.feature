@@ -9,7 +9,7 @@ Feature: Steps for performing a PATCH request
     Given the http mock endpoint 'post_endpoint' responds with status code '200'
     Given the http mock endpoint 'post_endpoint' is made available
 
-    Given the request method is 'PATCH'
+    Given a 'PATCH' request
     Given the request has header 'Content-Type'='application/json'
 
     When the request is sent to '/resources'
@@ -30,7 +30,7 @@ Feature: Steps for performing a PATCH request
     Given the http mock endpoint 'post_endpoint' responds with status code '200'
     Given the http mock endpoint 'post_endpoint' is made available
 
-    Given the request method is 'PATCH'
+    Given a 'PATCH' request
     Given the request has header 'Content-Type'='application/json'
 
     When the request is sent to '/resources'

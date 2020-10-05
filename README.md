@@ -9,9 +9,9 @@ There is a small test project demonstrating how to use this library here https:/
 
 ## Steps provided
 ```java
+@Given("^a '(.*)' request$")
 @Given("^the request body is$")
 @Given("^the request body is '(.*)'$")
-@Given("^the request method is '(.*)'$")
 @Given("^the request has header '(.*)'='(.*)'$")
 
 @When("^the request is sent to '(.*)'$")
@@ -23,14 +23,31 @@ There is a small test project demonstrating how to use this library here https:/
 ```
 
 ### Example
+#### Testing a GET
 ```gherkin
-Given the request method is 'GET'
+Given a 'GET' request
 Given the request has header 'Content-Type'='application/json'
 
 When the request is sent to '/resources/1'
 
 Then the server responds with status code '200'
 Then the response body matches '{"name":"Rob","status":"active"}'
+Then the response has header 'Content-Type'='application/json'
+```
+
+#### Testing a POST
+```gherkin
+Given a 'POST' request
+Given the request has header 'Content-Type'='application/json'
+Given the request body is 
+"""
+{"name":"Rob", "update":"yes"}
+"""
+
+When the request is sent to '/resources'
+
+Then the server responds with status code '201'
+Then the response body matches '{"id":10, "name":"Rob","status":"active"}'
 Then the response has header 'Content-Type'='application/json'
 ```
 
@@ -81,17 +98,15 @@ public class StepsBase {
     @Configuration
     public static class SpringTestConfig {
 
-        // ==== REQUIRED BY HttpRequestSteps ====
-        // In this example the global objectMapper is used, but another object mapper can be created here with different properties if needed
-        // this object is used internally to perform comparisons on json body strings
+        // ==== Customize the ObjectMapper used to perform body json comparisons ====
+        // this defaults to new ObjectMapper if not declared
         @Bean
         Supplier<ObjectMapper> objectMapperSupplier(ObjectMapper objectMapper) {
             return () -> objectMapper;
         }
         
-        // ==== REQUIRED BY HttpRequestSteps ====
-        // this value will be used to construct the whole url for the requests 
-        @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+        // ==== Customize how the url is constructed (the base part) ====
+        // this defaults to "http://localhost:8080" if not declared 
         @Bean
         Supplier<String> baseUrl(@LocalServerPort int port) {
             return () -> "http://localhost:" + port;
@@ -104,32 +119,58 @@ public class StepsBase {
 
 ## B. Interoperability with your own step definitions
 
-The *HttpRequestStepsContext* bean is used to pass state in between steps
+#### The *cucumberHttpContext* bean is used to pass state in between steps
 
-In case you want to perform additional assertions on the http response or tune the request programmatically, you can inject the HttpRequestStepsContext in your step definition class
+In case you want to perform additional assertions on the http response or tune the request, you can inject the CucumberHttpContext bean in your step definition class
 
 For example:
 ```java
 public class MySteps {
     
-    @Autowired HttpRequestStepsContext httpRequestStepsContext;
+    @Autowired CucumberHttpContext cucumberHttpContext;
 
-    @Given("^some programmatic setup$")
+    @Given("^some custom setup$")
     public void someSetup(){
         //..
-        httpRequestStepsContext.getRequestHeaders().put("john","smith");
+        cucumberHttpContext.getRequestHeaders().put("john","smith");
         //...
     }
 
-    @Given("^some programmatic check$")
+    @Given("^some custom check$")
     public void someCheck(){
         //..
-        assertThat(httpRequestStepsContext.getHttpResponse().getBody()).contains("apples");
+        assertThat(cucumberHttpContext.getHttpResponse().getBody()).contains("apples");
         //...
     }
 }
 ```
-_Disclaimer:_ This will be changed in the near future, the internal implementation will be changed to OkHttp and a better mechanism will be implemented to support interoperability.
+#### The *unirestHttpHandlers* bean holds the request handlers
+
+In case you want to change how the http call is made for a particular method type, inject the *unirestHttpHandlers* bean and replace the entries you want.
+
+A way of doing that (a little hacky) is to declare a dummy bean in your spring config, inject it via parameter, and modify it there.
+
+_Note_: The underlying library used to make the calls is Unirest and the current implementation does not allow for generic response types, so you will need to use it.
+
+Like so: 
+```java
+    
+    @Configuration
+    public static class SpringTestConfig {
+
+        @Bean
+        boolean customPostHandler(Map<String, HttpRequestHandler<HttpResponse<String>>> unirestHttpHandlers){
+
+            unirestHttpHandlers.put("post", context -> {
+                
+                // do your customization here
+                return null;
+            });
+
+            return true;
+        }
+}
+```
 
 # General considerations
 

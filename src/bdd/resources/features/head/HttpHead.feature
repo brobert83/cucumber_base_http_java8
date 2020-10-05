@@ -8,7 +8,7 @@ Feature: Steps for performing a HEAD request
     Given the http mock endpoint 'resources_for_getting' responds with status code '200'
     Given the http mock endpoint 'resources_for_getting' is made available
 
-    Given the request method is 'HEAD'
+    Given a 'HEAD' request
     Given the request has header 'Content-Type'='application/json'
 
     When the request is sent to '/resources/1'
