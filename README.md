@@ -3,7 +3,7 @@ This library aims to provide a bundle of Cucumber predefined steps to perform HT
 
 There is a small test project demonstrating how to use this library here https://github.com/brobert83/cucumber_base_http_java8_springboot_test
 
-#### Visit the [WIKI](wiki/) for more information 
+### Visit the [WIKI](https://github.com/brobert83/cucumber_base_http_java8/wiki/home) for more information 
 
 # Basic setup
 ```xml
