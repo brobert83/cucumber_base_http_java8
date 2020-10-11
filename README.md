@@ -1,4 +1,6 @@
 # Cucumber HTTP steps [![Build Status](https://travis-ci.com/brobert83/cucumber_base_http_java8.svg?branch=master)](https://travis-ci.com/brobert83/cucumber_base_http_java8)
+**THIS LIBRARY IS VERY NEW, I'M NOT DONE WITH THE CORE YET, BUT IT'S USABLE**
+
 This library aims to provide a bundle of Cucumber predefined steps to perform HTTP calls and perform verifications on the HTTP response.
 
 There is a small test project demonstrating how to use this library here https://github.com/brobert83/cucumber_base_http_java8_springboot_test
@@ -28,19 +30,17 @@ public class CucumberTest {
 ```
 
 ## Steps provided
-```java
-@Given("^a '(.*)' request$")
-@Given("^the request body is$")
-@Given("^the request body is '(.*)'$")
-@Given("^the request has header '(.*)'='(.*)'$")
-
-@When("^the request is sent to '(.*)'$")
-
-@Then("^the server responds with status code '(.*)'$")
-@Then("^the response body matches$")
-@Then("^the response body matches '(.*)'$")
-@Then("^the response has header '(.*)'='(.*)'$")
-```
+|Step|Reference doc|
+|:----|:-------------|
+|`Given a '(.*)' request`||
+|`Given the request body is '(.*)'` ||
+|`Given the request has header '(.*)'='(.*)'`||
+|||
+|`When the request is sent to '(.*)'`||
+|||
+|`Then the server responds with status code '(.*)'`||
+|`Then the response body matches '(.*)'`|[HttpResponseBodyMatchStep.md](src/main/java/io/github/brobert83/cucumber_http_java8/steps/response_body/HttpResponseBodyMatchStep.md)|
+|`Then the response has header '(.*)'='(.*)'`||
 
 # Example
 ```gherkin
@@ -60,4 +60,3 @@ Scenario: Perform a GET request
 
 - This main intention for this library is to be used in conjunction with Spring/Springboot
 - The mechanism used to create interoperability is Spring beans wiring
-- Currently only json response body is supported, anything else and the body assert will fail

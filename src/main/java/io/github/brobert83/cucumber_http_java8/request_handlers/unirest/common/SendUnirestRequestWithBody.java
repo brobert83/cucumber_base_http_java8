@@ -3,11 +3,13 @@ package io.github.brobert83.cucumber_http_java8.request_handlers.unirest.common;
 import io.github.brobert83.cucumber_http_java8.CucumberHttpContext;
 import kong.unirest.HttpRequestWithBody;
 import kong.unirest.HttpResponse;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
+@Component
 public class SendUnirestRequestWithBody implements BiFunction<HttpRequestWithBody, CucumberHttpContext, HttpResponse<String>>{
 
     @Override

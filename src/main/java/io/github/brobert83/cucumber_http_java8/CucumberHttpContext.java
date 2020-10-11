@@ -3,10 +3,12 @@ package io.github.brobert83.cucumber_http_java8;
 import kong.unirest.HttpResponse;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class CucumberHttpContext {
 
     private Data data;
