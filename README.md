@@ -12,7 +12,7 @@ There is a small test project demonstrating how to use this library here https:/
 <dependency>
     <groupId>io.github.brobert83</groupId>
     <artifactId>cucumber-http-java8</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <scope>test</scope>
 </dependency>     
 ```
