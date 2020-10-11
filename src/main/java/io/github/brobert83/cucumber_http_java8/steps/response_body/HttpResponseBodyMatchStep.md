@@ -1,4 +1,12 @@
-# Http response body asserts
+# Definition
+```gherkin
+Then the response body matches 'expected body here'
+Then the response body matches
+"""
+expected body here
+"""
+```
+# Details
 
 This step will compare the response body with a expected value. 
 
@@ -15,19 +23,7 @@ The content type value match is done using a regular expression, so for example 
 
 Unknown content types will throw an exception.
 
-There are two variants for the step definition:
-```gherkin
-Then the response body matches 'value goes here'
-```
-AND the heredoc version
-```gherkin
-Then the response body matches
-"""
-value goes here
-"""
-```
-
-## Examples:
+# Examples
 
 ```gherkin
 Scenario: Perform a JSON match assert

@@ -30,17 +30,18 @@ public class CucumberTest {
 ```
 
 ## Steps provided
-|Step|Reference doc|
-|:----|:-------------|
-|`Given a '(.*)' request`||
-|`Given the request body is '(.*)'` ||
-|`Given the request has header '(.*)'='(.*)'`||
-|||
-|`When the request is sent to '(.*)'`||
-|||
-|`Then the server responds with status code '(.*)'`||
-|`Then the response body matches '(.*)'`|[HttpResponseBodyMatchStep.md](src/main/java/io/github/brobert83/cucumber_http_java8/steps/response_body/HttpResponseBodyMatchStep.md)|
-|`Then the response has header '(.*)'='(.*)'`||
+```gherkin 
+Given a '(.*)' request
+Given the request body is '(.*)'` 
+Given the request has header '(.*)'='(.*)'
+When the request is sent to '(.*)'
+Then the server responds with status code '(.*)'
+Then the response body matches '(.*)'`
+Then the response has header '(.*)'='(.*)'
+```        
+
+## Reference doc
+[Then the response body matches '(.*)'](src/main/java/io/github/brobert83/cucumber_http_java8/steps/response_body/HttpResponseBodyMatchStep.md)
 
 # Example
 ```gherkin
