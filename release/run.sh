@@ -12,7 +12,7 @@ docker run \
    ${interactive} \
    -e RELEASE_TYPE=${type} \
    -e GITHUB_REPO=github.com/brobert83/cucumber_base_http_java8.git \
-   -e GITHUB_BRANCH=release-improv \
+   -e GITHUB_BRANCH=master \
    -e GITHUB_USERNAME=brobert83 \
    -e GITHUB_EMAIL=robert.baboi@gmail.com \
    -e GITHUB_TOKEN_FILE=/work/secrets/github_token \
