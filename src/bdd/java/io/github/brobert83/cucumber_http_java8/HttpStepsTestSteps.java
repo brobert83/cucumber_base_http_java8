@@ -8,10 +8,12 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import io.cucumber.java.en.Given;
 import io.cucumber.spring.CucumberContextConfiguration;
+import io.github.brobert83.cucumber_http_java8.steps.target_setup.SetupTargetStep;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -23,7 +25,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -41,7 +42,8 @@ public class HttpStepsTestSteps {
     public static class SpringTestConfig {
 
         @Bean
-        WireMockServer wireMockServer() {
+        WireMockServer wireMockServer(
+                @Qualifier("targets") Map<String, String> targets) {
 
             WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort());
 
@@ -51,13 +53,9 @@ public class HttpStepsTestSteps {
 
             WireMock.configureFor("localhost", wireMockServer.port());
 
-            return wireMockServer;
-        }
+            targets.put(SetupTargetStep.DEFAULT_TARGET_NAME, "http://localhost:" + wireMockServer.port());
 
-        // ==== Customization ====
-        @Bean
-        Supplier<String> baseUrl(WireMockServer wireMockServer) {
-            return () -> "http://localhost:" + wireMockServer.port();
+            return wireMockServer;
         }
 
     }
@@ -67,6 +65,7 @@ public class HttpStepsTestSteps {
     Map<String, EndpointMock> endpointsBuilders = new HashMap<>();
 
     @Autowired WireMockServer wireMockServer;
+    @Autowired @Qualifier("targets") Map<String, String> targets;
 
     @Getter @Setter
     static class EndpointMock {
@@ -74,6 +73,11 @@ public class HttpStepsTestSteps {
         Map<String, String> requestHeaders = new HashMap<>();
         Map<String, String> responseHeaders = new HashMap<>();
         int statusCode;
+    }
+
+    @Given("^the target server '(.*)' pointing at wiremock server with base path '(.*)'$")
+    public void setTarget(String target, String path) {
+        targets.put(target, "http://localhost:" + wireMockServer.port() + path);
     }
 
     @Given("^the http mock endpoint '(.*)' for method '(.*)' on path '(.*)'$")

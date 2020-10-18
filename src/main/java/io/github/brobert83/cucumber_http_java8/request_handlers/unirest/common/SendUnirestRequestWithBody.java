@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
 @Component
-public class SendUnirestRequestWithBody implements BiFunction<HttpRequestWithBody, CucumberHttpContext, HttpResponse<String>>{
+public class SendUnirestRequestWithBody implements BiFunction<HttpRequestWithBody, CucumberHttpContext, HttpResponse<String>> {
 
     @Override
     public HttpResponse<String> apply(HttpRequestWithBody requestWithBody, CucumberHttpContext context) {
@@ -23,7 +23,7 @@ public class SendUnirestRequestWithBody implements BiFunction<HttpRequestWithBod
 
         return Optional.ofNullable(context.getRequestBody())
                 .map(body -> requestWithHeaders.body(body).asString())
-                .orElse(requestWithHeaders.asString());
+                .orElseGet(requestWithHeaders::asString);
     }
 
 }

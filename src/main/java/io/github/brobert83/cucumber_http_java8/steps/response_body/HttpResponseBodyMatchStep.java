@@ -45,8 +45,16 @@ public class HttpResponseBodyMatchStep {
     @Autowired String httpResponseBodyDefaultContentType;
 
     @Then("^the response body matches$")
-    @Then("^the response body matches '(.*)'$")
     public void verifyResponseBody(String expectedBody) {
+        verify(expectedBody);
+    }
+
+    @Then("^the response body matches '(.*)'$")
+    public void verifyResponseBodyHeredoc(String expectedBody) {
+        verify(expectedBody);
+    }
+
+    private void verify(String expectedBody) {
 
         String body = cucumberHttpContext.getHttpResponse().getBody();
 

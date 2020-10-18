@@ -16,12 +16,11 @@ import org.springframework.context.annotation.Lazy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
+
+import static io.github.brobert83.cucumber_http_java8.steps.target_setup.SetupTargetStep.DEFAULT_TARGET_NAME;
 
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 public class SendHttpRequestStep {
-
-    private final static String DEFAULT_BASE_URL = "http://localhost:8080";
 
     @Configuration
     @Lazy
@@ -45,29 +44,29 @@ public class SendHttpRequestStep {
             return handlers;
         }
 
-        @Bean
-        String cucumberHttpBaseUrl(
-                @Autowired(required = false)
-                @Qualifier("baseUrl")
-                        Supplier<String> baseUrl){
-
-            return Optional.ofNullable(baseUrl).map(Supplier::get).orElse(DEFAULT_BASE_URL);
-        }
-
     }
 
     @Autowired CucumberHttpContext cucumberHttpContext;
-    @Autowired String cucumberHttpBaseUrl;
     @Autowired Map<String, HttpRequestHandler<HttpResponse<String>>> unirestHttpHandlers;
+    @Autowired @Qualifier("targets") Map<String, String> targets;
 
-    String appUrl(String uri) {
-        return cucumberHttpBaseUrl + uri;
+    @When("^the request is sent to server '(.*)' with path '(.*)'$")
+    public void sendRequestAtTarget(String target, String uri) {
+        send(target, uri);
     }
 
     @When("^the request is sent to '(.*)'$")
     public void sendRequest(String uri) {
+        send(DEFAULT_TARGET_NAME, uri);
+    }
 
-        cucumberHttpContext.setUrl(appUrl(uri));
+    private void send(String target, String uri) {
+
+        String baseUrl = targets.get(target);
+
+        Optional.ofNullable(baseUrl).orElseThrow(() -> new RuntimeException(String.format("Server '%s' is not defined", target)));//todo: improve this error message
+
+        cucumberHttpContext.setUrl(baseUrl + uri);
 
         String requestMethod = cucumberHttpContext.getRequestMethod();
 
