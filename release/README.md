@@ -52,3 +52,7 @@ Create/place the following files in the `secrets` directory:
 Apart from signingkey.asc, all the others need to contain the credentials their named after.
 
 Then run one of the scripts `./patch.sh`,`./minor.sh` or `./major.sh`
+
+# Post-release
+
+After the release has finished, go to github and create a PR from the release branch to master, merge and that's it.
