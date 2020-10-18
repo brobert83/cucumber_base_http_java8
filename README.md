@@ -1,5 +1,5 @@
 # Cucumber HTTP steps 
-[![Build Status](https://travis-ci.com/brobert83/cucumber_base_http_java8.svg?branch=master)](https://travis-ci.com/brobert83/cucumber_base_http_java8) 
+![Build](https://github.com/brobert83/cucumber_base_http_java8/workflows/Build/badge.svg?branch=master) 
 ![Maven Central](https://img.shields.io/maven-central/v/io.github.brobert83/cucumber-http-java8)
 ![Apache License, Version 2.0, January 2004](https://img.shields.io/github/license/apache/maven.svg?label=License)
 ![Lines of code](https://img.shields.io/tokei/lines/github/brobert83/cucumber_base_http_java8)
